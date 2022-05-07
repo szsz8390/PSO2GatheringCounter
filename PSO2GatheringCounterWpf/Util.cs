@@ -46,13 +46,21 @@ namespace PSO2GatheringCounter
         public static string[] ReadFileAllLines(string path)
         {
             var lines = new List<string>();
-            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            try
             {
-                using (var sr = new StreamReader(fs))
+                using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    // 改行で分割
-                    lines.AddRange(sr.ReadToEnd().Split("\r\n").Where(line => !string.IsNullOrWhiteSpace(line)));
+                    using (var sr = new StreamReader(fs))
+                    {
+                        // 改行で分割
+                        // TODO: 要確認 CRLFでよい？
+                        lines.AddRange(sr.ReadToEnd().Split("\r\n").Where(line => !string.IsNullOrWhiteSpace(line)));
+                    }
                 }
+            }
+            catch
+            {
+                // 取得失敗時
             }
             return lines.ToArray();
         }

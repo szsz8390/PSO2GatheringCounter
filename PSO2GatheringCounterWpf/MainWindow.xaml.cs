@@ -239,69 +239,6 @@ namespace PSO2GatheringCounter
         {
             _timer.Stop();
         }
-        
-        /// <summary>
-        /// グリッド編集開始時、行が固定のアイテム行（ReadOnly）なら編集をキャンセルする。
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
-        {
-            var rowIndex = dataGrid.ItemContainerGenerator.IndexFromContainer(e.Row);
-            var currentItem = _items[rowIndex];
-            if (currentItem.ReadOnly)
-            {
-                e.Cancel = true;
-            }
-        }
-
-        /// <summary>
-        /// グリッド編集終了時、アイテム名が空ならメッセージを表示し、
-        /// 編集をキャンセルするか行を削除するか選択させる。
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            var editingElement = e.EditingElement;
-            if (editingElement is TextBox)
-            {
-                var editingTextBox = editingElement as TextBox;
-                var newValue = editingTextBox.Text;
-                // アイテム名が空の場合、確認
-                if (string.IsNullOrWhiteSpace(newValue))
-                {
-                    var rowIndex = e.Row.GetIndex();
-                    var result = MessageBox.Show("アイテム名を空にすることはできません。\nこの行を削除しますか？", "確認", MessageBoxButton.OKCancel);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        // 行削除
-                        _items.RemoveAt(rowIndex);
-                    }
-                    else
-                    {
-                        // アイテム名をもとにもどす
-                        editingTextBox.Text = _items[rowIndex].ItemName;
-                    }
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// グリッドのデータソース更新時、新規追加行のアイテム名を埋めたなら
-        /// 新しい新規追加行を追加する。
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dataGrid_SourceUpdated(object sender, DataTransferEventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(_items.Last().ItemName))
-            {
-                // 新規追加行
-                _items.Add(new GridModel("", 0));
-            }
-        }
 
         /// <summary>
         /// ウィンドウの大きさと位置をアプリケーション設定に保存する。
@@ -328,7 +265,7 @@ namespace PSO2GatheringCounter
             // ユーザー定義のアイテム
             Util.WriteUserItems(_items);
         }
-        
+
         /// <summary>
         /// メニューの「終了(_Q)」クリック時、終了する。
         /// </summary>
@@ -353,6 +290,21 @@ namespace PSO2GatheringCounter
             settings.AlwaysOnTop = aot;
             settings.Save();
             Topmost = aot;
+        }
+
+        /// <summary>
+        /// グリッドのデータソース更新時、新規追加行のアイテム名を埋めたなら
+        /// 新しい新規追加行を追加する。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGrid_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(_items.Last().ItemName))
+            {
+                // 新規追加行
+                _items.Add(new GridModel("", 0));
+            }
         }
 
         /// <summary>
@@ -425,7 +377,7 @@ namespace PSO2GatheringCounter
             if (dataGrid.SelectedCells.Count <= 0) return;
 
             // 行のモデルを取得
-            GridModel d = (GridModel) dataGrid.SelectedCells[0].Item;
+            GridModel d = (GridModel)dataGrid.SelectedCells[0].Item;
             int rowIndex = _items.IndexOf(d);
             if (d.ReadOnly)
             {
@@ -456,6 +408,54 @@ namespace PSO2GatheringCounter
             contextmenu.Items.Add(menuitem);
             // グリッドの右クリックメニューとする
             dataGrid.ContextMenu = contextmenu;
+        }
+
+        /// <summary>
+        /// グリッド編集開始時、行が固定のアイテム行（ReadOnly）なら編集をキャンセルする。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+            var rowIndex = dataGrid.ItemContainerGenerator.IndexFromContainer(e.Row);
+            var currentItem = _items[rowIndex];
+            if (currentItem.ReadOnly)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        /// <summary>
+        /// グリッド編集終了時、アイテム名が空ならメッセージを表示し、
+        /// 編集をキャンセルするか行を削除するか選択させる。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            var editingElement = e.EditingElement;
+            if (editingElement is TextBox)
+            {
+                var editingTextBox = editingElement as TextBox;
+                var newValue = editingTextBox.Text;
+                // アイテム名が空の場合、確認
+                if (string.IsNullOrWhiteSpace(newValue))
+                {
+                    var rowIndex = e.Row.GetIndex();
+                    var result = MessageBox.Show("アイテム名を空にすることはできません。\nこの行を削除しますか？", "確認", MessageBoxButton.OKCancel);
+                    if (result == MessageBoxResult.OK)
+                    {
+                        // 行削除
+                        _items.RemoveAt(rowIndex);
+                    }
+                    else
+                    {
+                        // アイテム名をもとにもどす
+                        editingTextBox.Text = _items[rowIndex].ItemName;
+                    }
+                }
+
+            }
         }
 
     }

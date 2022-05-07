@@ -28,10 +28,10 @@
                   LoadingRow="dataGrid_LoadingRow"
                   BeginningEdit="dataGrid_BeginningEdit"
                   CellEditEnding="dataGrid_CellEditEnding"
-                  MouseRightButtonUp="dataGrid_MouseRightButtonUp">
+                  MouseRightButtonUp="dataGrid_MouseRightButtonUp" HorizontalGridLinesBrush="Gray" VerticalGridLinesBrush="Silver" AlternatingRowBackground="#FFF0F0F0" RowHeaderWidth="20">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="アイテム名" Width="150" Binding="{Binding Path=ItemName, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" CanUserSort="False" />
-                <DataGridTextColumn Header="取得数" Width="100" Binding="{Binding GetCount}" CanUserSort="False" IsReadOnly="True">
+                <DataGridTextColumn Header="アイテム名" Width="200" Binding="{Binding Path=ItemName, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" CanUserSort="False" />
+                <DataGridTextColumn Header="取得数" Width="80" Binding="{Binding GetCount}" CanUserSort="False" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -39,7 +39,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="ノルマ" Width="100" Binding="{Binding NormaCount}" CanUserSort="False">
+                <DataGridTextColumn Header="ノルマ" Width="80" Binding="{Binding NormaCount}" CanUserSort="False">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center"/>
