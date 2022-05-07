@@ -24,7 +24,11 @@
         </DockPanel>
         <DataGrid x:Name="dataGrid"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AutoGenerateColumns="False" SelectionMode="Single"
-                  BeginningEdit="dataGrid_BeginningEdit" SourceUpdated="dataGrid_SourceUpdated" LoadingRow="dataGrid_LoadingRow" MouseRightButtonUp="dataGrid_MouseRightButtonUp">
+                  SourceUpdated="dataGrid_SourceUpdated"
+                  LoadingRow="dataGrid_LoadingRow"
+                  BeginningEdit="dataGrid_BeginningEdit"
+                  CellEditEnding="dataGrid_CellEditEnding"
+                  MouseRightButtonUp="dataGrid_MouseRightButtonUp">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="アイテム名" Width="150" Binding="{Binding Path=ItemName, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" CanUserSort="False" />
                 <DataGridTextColumn Header="取得数" Width="100" Binding="{Binding GetCount}" CanUserSort="False" IsReadOnly="True">

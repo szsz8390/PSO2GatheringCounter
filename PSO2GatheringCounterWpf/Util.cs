@@ -66,7 +66,7 @@ namespace PSO2GatheringCounter
             // ユーザ定義のアイテム
             // カレントディレクトリのitems.csvファイル
             var userItemFilePath = Path.Combine(Directory.GetCurrentDirectory(), "items.csv");
-            var items = new List<GridModel>)();
+            var items = new List<GridModel>();
             if (File.Exists(userItemFilePath))
             {
                 var lines = ReadFileAllLines(userItemFilePath);

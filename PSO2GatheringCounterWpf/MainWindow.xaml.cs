@@ -256,6 +256,39 @@ namespace PSO2GatheringCounter
         }
 
         /// <summary>
+        /// グリッド編集終了時、アイテム名が空ならメッセージを表示し、
+        /// 編集をキャンセルするか行を削除するか選択させる。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            var editingElement = e.EditingElement;
+            if (editingElement is TextBox)
+            {
+                var editingTextBox = editingElement as TextBox;
+                var newValue = editingTextBox.Text;
+                // アイテム名が空の場合、確認
+                if (string.IsNullOrWhiteSpace(newValue))
+                {
+                    var rowIndex = e.Row.GetIndex();
+                    var result = MessageBox.Show("アイテム名を空にすることはできません。\nこの行を削除しますか？", "確認", MessageBoxButton.OKCancel);
+                    if (result == MessageBoxResult.OK)
+                    {
+                        // 行削除
+                        _items.RemoveAt(rowIndex);
+                    }
+                    else
+                    {
+                        // アイテム名をもとにもどす
+                        editingTextBox.Text = _items[rowIndex].ItemName;
+                    }
+                }
+
+            }
+        }
+
+        /// <summary>
         /// グリッドのデータソース更新時、新規追加行のアイテム名を埋めたなら
         /// 新しい新規追加行を追加する。
         /// </summary>
@@ -424,5 +457,6 @@ namespace PSO2GatheringCounter
             // グリッドの右クリックメニューとする
             dataGrid.ContextMenu = contextmenu;
         }
+
     }
 }
