@@ -1,0 +1,57 @@
+﻿<Window x:Class="PSO2GatheringCounter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:prop="clr-namespace:PSO2GatheringCounter.Properties"
+        xmlns:local="clr-namespace:PSO2GatheringCounter"
+        mc:Ignorable="d"
+        Title="PSO2 Gathering Counter" Height="480" Width="480">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" x:Name="Menu">
+            <MenuItem Header="{x:Static prop:Resources.MenuFile}">
+                <MenuItem Header="{x:Static prop:Resources.MenuFileQuit}" Click="MenuItemQuit_Click"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="{x:Static prop:Resources.MenuView}">
+                <MenuItem Header="{x:Static prop:Resources.MenuViewAot}" x:Name="MenuViewAot" IsCheckable="True" Click="MenuItemAot_Click"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Height="30">
+            <Label x:Name="labelRealToday" Content="現在日時:" />
+            <Label x:Name="textRealToday" Content="yyyy/MM/dd HH時" />
+            <Label x:Name="labelToday" Content="(4時切り替えの) 日付:" />
+            <Label x:Name="textToday" Content="yyyy/MM/dd" />
+        </DockPanel>
+        <DataGrid x:Name="dataGrid"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AutoGenerateColumns="False" SelectionMode="Single"
+                  BeginningEdit="dataGrid_BeginningEdit" SourceUpdated="dataGrid_SourceUpdated" LoadingRow="dataGrid_LoadingRow" MouseRightButtonUp="dataGrid_MouseRightButtonUp">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="アイテム名" Width="150" Binding="{Binding Path=ItemName, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" CanUserSort="False" />
+                <DataGridTextColumn Header="取得数" Width="100" Binding="{Binding GetCount}" CanUserSort="False" IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="ノルマ" Width="100" Binding="{Binding NormaCount}" CanUserSort="False">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn Header="完了" Width="70" CanUserSort="False" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Completed}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</Window>
