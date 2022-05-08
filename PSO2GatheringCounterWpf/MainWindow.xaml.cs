@@ -24,8 +24,6 @@ namespace PSO2GatheringCounter
     /// </summary>
     public partial class MainWindow : Window
     {
-        /// <summary>数値の正規表現</summary>
-        private readonly System.Text.RegularExpressions.Regex _numberRegex = new("[0-9]+");
         /// <summary>ログファイルを定期的に読むためのタイマー</summary>
         private readonly DispatcherTimer _timer = new ();
         /// <summary>アイテムリスト</summary>
@@ -52,7 +50,19 @@ namespace PSO2GatheringCounter
             SetGrid();
             SetToday();
             // 初回データ読み込み
-            GetCounts();
+            try
+            {
+                GetCounts();
+            }
+            catch (Exception ex)
+            {
+                var log = new System.Text.StringBuilder();
+                log.AppendLine("初回データ読み込みに失敗しました。");
+                log.Append(ex.Message);
+                log.Append(ex.StackTrace);
+                Util.WriteErrorLog(log.ToString());
+                throw;
+            }
             // タイマー設定
             SetupTimer();
         }
@@ -113,10 +123,10 @@ namespace PSO2GatheringCounter
         private void SetToday()
         {
             // 日付+時
-            var realToday = Util.getToday(0);
+            var realToday = Util.GetToday(0);
             textRealToday.Content = $"{realToday.ToString("yyyy/MM/dd HH")}時";
             // 4時切り替えの日付も表示
-            var today = Util.getToday(4);
+            var today = Util.GetToday(4);
             textToday.Content = today.ToString("yyyy/MM/dd");
         }
 
@@ -130,24 +140,8 @@ namespace PSO2GatheringCounter
         {
             // 起動中に日をまたぐ場合もあるので更新しておく
             SetToday();
-            var documentDir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            var logDir = System.IO.Path.Combine(documentDir, "SEGA", "PHANTASYSTARONLINE2", "log_ngs");
-            // ログファイルの日付
-            // ログファイル ActionLog[yyyyMMdd]_*.txt
-            // *: "00"
-            // ログ形式: TSV
-            // 2022-05-05T16:14:47	3	[Pickup]	*player id*	*chara name*	アルファリアクター	Num(1)
-            var today = Util.getToday(4);
-            // TODO: 要検証 01以降がある（ローリングする）のか？条件は？
-            //   ファイルサイズ？日付？1MBを超えてもローリングされていはいない
-            // 翌日になっても同じファイルに書き込まれる場合がある
-            // いつ切り替わるのか？
-            // 翌日AM7時でも同じファイルに書き込まれたことがある。ログインし続けたわけではない。
-            // ファイル: ActionLog20220503_00.txt
-            // 2022-05-04T07:04:48	22	[Pickup]	*player id*	*chara name*	RestaSign	CurrentNum(9)
-            // 4時でないとしたら11時？なお、2022/5/4は水曜日（メンテ日、ただしメンテ自体はお休みの日）
-            var fileName = $"ActionLog{today.ToString("yyyyMMdd")}_*.txt";
-            var files = Directory.GetFiles(logDir, fileName);
+            // ログファイル取得
+            var files = Util.GetTargetLogFiles();
             var itemsCount = _items.Count;
             // 個数
             var counts = new int[itemsCount];
@@ -164,7 +158,7 @@ namespace PSO2GatheringCounter
                     lines.Where(line => line.Contains(item.ItemName)).ToList().ForEach(line =>
                     {
                         // 獲得数を取得
-                        var num = GetCountFromLine(line, item.ItemName);
+                        var num = Util.GetCountFromLine(line, item.ItemName);
                         counts[i] += num;
                     });
                 }
@@ -187,29 +181,6 @@ namespace PSO2GatheringCounter
         }
 
         /// <summary>
-        /// 該当アイテムの獲得数を取得する。
-        /// </summary>
-        /// <param name="line">ログの1行</param>
-        /// <param name="itemName">アイテム名</param>
-        /// <returns>アイテムの獲得数（0～）</returns>
-        private int GetCountFromLine(string line, string itemName)
-        {
-            int count = 0;
-            // ログファイルはTSV
-            var columns = line.Split("\t");
-            // アイテム名が合っていて、取得ログの場合のみ加算
-            if (columns[2] == "[Pickup]" && columns[5] == itemName)
-            {
-                // 獲得数 Num\([0-9]+\)
-                var num = columns[6];
-                var match = _numberRegex.Match(num);
-                // 数値の正規表現にマッチした部分なので直Parseで大丈夫
-                count = int.Parse(match?.Value ?? "0");
-            }
-            return count;
-        }
-
-        /// <summary>
         /// タイマーの設定
         /// </summary>
         private void SetupTimer()
@@ -227,7 +198,19 @@ namespace PSO2GatheringCounter
         /// <param name="e"></param>
         private void OnTimer(object? sender, EventArgs e)
         {
-            GetCounts();
+            try
+            {
+                GetCounts();
+            }
+            catch (Exception ex)
+            {
+                var log = new System.Text.StringBuilder();
+                log.AppendLine("タイマー処理でのデータ読み込みに失敗しました。");
+                log.Append(ex.Message);
+                log.Append(ex.StackTrace);
+                Util.WriteErrorLog(log.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -438,10 +421,10 @@ namespace PSO2GatheringCounter
             {
                 var editingTextBox = editingElement as TextBox;
                 var newValue = editingTextBox.Text;
+                var rowIndex = e.Row.GetIndex();
                 // アイテム名が空の場合、確認
-                if (string.IsNullOrWhiteSpace(newValue))
+                if (string.IsNullOrWhiteSpace(newValue) && rowIndex != _items.Count - 1)
                 {
-                    var rowIndex = e.Row.GetIndex();
                     var result = MessageBox.Show("アイテム名を空にすることはできません。\nこの行を削除しますか？", "確認", MessageBoxButton.OKCancel);
                     if (result == MessageBoxResult.OK)
                     {

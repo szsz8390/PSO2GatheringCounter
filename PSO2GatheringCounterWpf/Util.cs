@@ -12,6 +12,11 @@ namespace PSO2GatheringCounter
     /// </summary>
     internal static class Util
     {
+        /// <summary>数値の正規表現</summary>
+        private static readonly System.Text.RegularExpressions.Regex _numberRegex = new("[0-9]+");
+        /// <summary>ログの日付をパースする時、カルチャに依存せずにパースするためのカルチャ指定</summary>
+        private static readonly System.Globalization.CultureInfo _defaultCultureProvider = System.Globalization.CultureInfo.InvariantCulture;
+
         /// <summary>
         /// 今日の日時を取得する。
         /// 日付の切り替え時刻に達していない場合、前日の日時を取得する。
@@ -22,7 +27,7 @@ namespace PSO2GatheringCounter
         /// </example>
         /// <param name="dateLineHour">日付の切り替え時刻</param>
         /// <returns>今日の日時</returns>
-        public static DateTime getToday(int dateLineHour)
+        public static DateTime GetToday(int dateLineHour)
         {
             var now = DateTime.Now;
             // 日付の切り替え時刻に達していない場合、前日とする
@@ -112,6 +117,92 @@ namespace PSO2GatheringCounter
             // カレントディレクトリのitems.csvに保存
             var userItemFilePath = Path.Combine(Directory.GetCurrentDirectory(), "items.csv");
             File.WriteAllLinesAsync(userItemFilePath, fileContents);
+        }
+
+        public static IList<string> GetTargetLogFiles()
+        {
+            var targetLogFiles = new List<string>();
+            // ログフォルダ
+            // (ドキュメントフォルダ)\SEGA\PHANTASYSTARONLINE2\log_ngs
+            var documentDir = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            var logDir = System.IO.Path.Combine(documentDir, "SEGA", "PHANTASYSTARONLINE2", "log_ngs");
+            // ログファイルの日付
+            // ログファイル ActionLog[yyyyMMdd]_*.txt
+            // *: "00"
+            // ログ形式: TSV
+            // 2022-05-05T16:14:47	3	[Pickup]	*player id*	*chara name*	アルファリアクター	Num(1)
+            // 翌日になっても同じファイルに書き込まれる場合があるので
+            // 前日のファイルも読み込み、カウント時に書き込み日付を判断する
+            // TODO: 要検証 01以降がある（ローリングする）のか？条件は？
+            //   ファイルサイズ？日付？1MBを超えてもローリングされていはいない
+            var today = DateTime.Now;
+            var fileName = $"ActionLog{today.ToString("yyyyMMdd")}_*.txt";
+            var files = Directory.GetFiles(logDir, fileName);
+            if (files != null && files.Length > 0)
+            {
+                targetLogFiles.AddRange(files);
+            }
+            var yesterday = today.AddDays(-1);
+            var yesterdayFileName = $"ActionLog{yesterday.ToString("yyyyMMdd")}_*.txt";
+            var yesterdayFiles = Directory.GetFiles(logDir, yesterdayFileName);
+            if (yesterdayFiles != null && yesterdayFiles.Length > 0)
+            {
+                targetLogFiles.AddRange(yesterdayFiles);
+            }
+            return targetLogFiles;
+        }
+
+        /// <summary>
+        /// 該当アイテムの獲得数を取得する。
+        /// </summary>
+        /// <param name="line">ログの1行</param>
+        /// <param name="itemName">アイテム名</param>
+        /// <returns>アイテムの獲得数（0～）</returns>
+        public static int GetCountFromLine(string line, string itemName)
+        {
+            int count = 0;
+            // ログファイルはTSV
+            var columns = line.Split("\t");
+            // 2022-04-30T17:15:23
+            var logDatetime = columns[0];
+            var logDt = DateTime.ParseExact(logDatetime, "yyyy-MM-ddTHH:mm:ss", _defaultCultureProvider);
+            var today = Util.GetToday(4);
+            if (logDt.Date.CompareTo(today.Date) != 0)
+            {
+                return count;
+            }
+            // アイテム名が合っていて、取得ログの場合のみ加算
+            if (columns[2] == "[Pickup]" && columns[5] == itemName)
+            {
+                // 獲得数 Num\([0-9]+\)
+                var num = columns[6];
+                var match = _numberRegex.Match(num);
+                // 数値の正規表現にマッチした部分なので直Parseで大丈夫
+                count = int.Parse(match?.Value ?? "0");
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// エラーログを書き込む。
+        /// </summary>
+        /// <param name="log">ログ内容</param>
+        public static void WriteErrorLog(string log)
+        {
+            try
+            {
+                var errorLogFilePath = Path.Combine(Directory.GetCurrentDirectory(), "error.log");
+                using (var fs = new FileStream(errorLogFilePath, FileMode.Append, FileAccess.ReadWrite, FileShare.ReadWrite))
+                {
+                    using (var sw = new StreamWriter(fs))
+                    {
+                        sw.WriteLine(log);
+                    }
+                }
+            }
+            catch
+            {
+            }
         }
 
     }
