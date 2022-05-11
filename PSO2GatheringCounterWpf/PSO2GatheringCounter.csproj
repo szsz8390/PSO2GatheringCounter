@@ -7,6 +7,8 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>PSO2GatheringCounter.ico</ApplicationIcon>
     <DebugType>none</DebugType>
+    <AssemblyVersion>1.1.1.0</AssemblyVersion>
+    <FileVersion>1.1.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

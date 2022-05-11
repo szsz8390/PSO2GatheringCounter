@@ -61,7 +61,6 @@ namespace PSO2GatheringCounter
                 log.Append(ex.Message);
                 log.Append(ex.StackTrace);
                 Util.WriteErrorLog(log.ToString());
-                throw;
             }
             // タイマー設定
             SetupTimer();
@@ -209,7 +208,6 @@ namespace PSO2GatheringCounter
                 log.Append(ex.Message);
                 log.Append(ex.StackTrace);
                 Util.WriteErrorLog(log.ToString());
-                throw;
             }
         }
 
