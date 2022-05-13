@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>PSO2GatheringCounter.ico</ApplicationIcon>
-    <DebugType>full</DebugType>
+    <DebugType>none</DebugType>
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
     <FileVersion>1.2.0.0</FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
