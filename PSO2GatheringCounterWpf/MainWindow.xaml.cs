@@ -48,20 +48,8 @@ namespace PSO2GatheringCounter
 
             // 画面設定
             SetGrid();
-            SetToday();
             // 初回データ読み込み
-            try
-            {
-                GetCounts();
-            }
-            catch (Exception ex)
-            {
-                var log = new System.Text.StringBuilder();
-                log.AppendLine("初回データ読み込みに失敗しました。");
-                log.Append(ex.Message);
-                log.Append(ex.StackTrace);
-                Util.WriteErrorLog(log.ToString());
-            }
+            GetCounts();
             // タイマー設定
             SetupTimer();
         }
@@ -139,11 +127,37 @@ namespace PSO2GatheringCounter
         {
             // 起動中に日をまたぐ場合もあるので更新しておく
             SetToday();
+            try
+            {
+                // 取得
+                var counts = GetItemCounts();
+                // グリッドに反映
+                RefreshGridCounts(counts);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                var log = new System.Text.StringBuilder();
+                log.AppendLine("ログファイル読み込みに失敗しました。");
+                log.Append(ex.Message);
+                log.Append(ex.StackTrace);
+                Util.WriteErrorLog(log.ToString());
+            }
+        }
+
+        /// <summary>
+        /// ログファイルを読み、該当アイテムの取得数を数える。
+        /// </summary>
+        /// <remarks>
+        /// ファイルの更新差分を取得するのが面倒なため、毎回ゼロから数える。
+        /// </remarks>
+        /// <returns>アイテムごとの獲得数</returns>
+        private Dictionary<string, int> GetItemCounts()
+        {
             // ログファイル取得
             var files = Util.GetTargetLogFiles();
             var itemsCount = _items.Count;
-            // 個数
-            var counts = new int[itemsCount];
+            // アイテムごとの獲得数
+            var counts = new Dictionary<string, int>();
 
             // ログファイルに記録された取得ログを数える
             foreach (var file in files)
@@ -151,23 +165,41 @@ namespace PSO2GatheringCounter
                 var lines = Util.ReadFileAllLines(file);
                 for (int i = 0; i < itemsCount; i++)
                 {
-                    var line = lines[i];
                     var item = _items[i];
                     if (string.IsNullOrWhiteSpace(item.ItemName)) continue;
                     lines.Where(line => line.Contains(item.ItemName)).ToList().ForEach(line =>
                     {
                         // 獲得数を取得
                         var num = Util.GetCountFromLine(line, item.ItemName);
-                        counts[i] += num;
+                        if (counts.ContainsKey(item.ItemName))
+                        {
+                            counts[item.ItemName] = counts[item.ItemName] + num;
+                        }
+                        else
+                        {
+                            counts[item.ItemName] = num;
+                        }
                     });
                 }
             }
 
+            return counts;
+        }
+
+        /// <summary>
+        /// アイテムごとの獲得数をグリッドに反映する。
+        /// </summary>
+        /// <param name="counts">アイテムごとの獲得数</param>
+        private void RefreshGridCounts(Dictionary<string, int> counts)
+        {
+            var itemsCount = _items.Count;
             // 数えた数を設定
             for (int i = 0; i < itemsCount; i++)
             {
                 var item = _items[i];
-                item.GetCount = counts[i];
+
+                if (string.IsNullOrWhiteSpace(item.ItemName) || !counts.ContainsKey(item.ItemName)) continue;
+                item.GetCount = counts[item.ItemName];
                 // ノルマ数以上になったら完了にする
                 if (!string.IsNullOrWhiteSpace(item.ItemName))
                 {
@@ -197,18 +229,7 @@ namespace PSO2GatheringCounter
         /// <param name="e"></param>
         private void OnTimer(object? sender, EventArgs e)
         {
-            try
-            {
-                GetCounts();
-            }
-            catch (Exception ex)
-            {
-                var log = new System.Text.StringBuilder();
-                log.AppendLine("タイマー処理でのデータ読み込みに失敗しました。");
-                log.Append(ex.Message);
-                log.Append(ex.StackTrace);
-                Util.WriteErrorLog(log.ToString());
-            }
+            GetCounts();
         }
 
         /// <summary>

@@ -6,13 +6,28 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>PSO2GatheringCounter.ico</ApplicationIcon>
-    <DebugType>none</DebugType>
-    <AssemblyVersion>1.1.1.0</AssemblyVersion>
-    <FileVersion>1.1.1.0</FileVersion>
+    <DebugType>full</DebugType>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>1.2.0</Version>
+    <PackageProjectUrl>https://github.com/szsz8390/PSO2GatheringCounter</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/szsz8390/PSO2GatheringCounter</RepositoryUrl>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <Authors>YUKI Suzu</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="PSO2GatheringCounter.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
