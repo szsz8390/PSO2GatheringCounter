@@ -166,6 +166,7 @@ namespace PSO2GatheringCounter
             // 2022-04-30T17:15:23
             var logDatetime = columns[0];
             var logDt = DateTime.ParseExact(logDatetime, "yyyy-MM-ddTHH:mm:ss", _defaultCultureProvider);
+            logDt = logDt.Hour < 4 ? logDt.AddDays(-1) : logDt;
             var today = Util.GetToday(4);
             if (logDt.Date.CompareTo(today.Date) != 0)
             {
@@ -174,6 +175,10 @@ namespace PSO2GatheringCounter
             // アイテム名が合っていて、取得ログの場合のみ加算
             if (columns[2] == "[Pickup]" && columns[5] == itemName)
             {
+                if (itemName == "アルファリアクター")
+                {
+                    System.Diagnostics.Debug.WriteLine("logDate: " + logDt + ", today: " + today);
+                }
                 // 獲得数 Num\([0-9]+\)
                 var num = columns[6];
                 var match = _numberRegex.Match(num);
