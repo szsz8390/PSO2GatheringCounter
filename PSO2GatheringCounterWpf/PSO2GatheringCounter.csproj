@@ -10,7 +10,7 @@
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
     <FileVersion>1.2.0.0</FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <PackageProjectUrl>https://github.com/szsz8390/PSO2GatheringCounter</PackageProjectUrl>
     <RepositoryUrl>https://github.com/szsz8390/PSO2GatheringCounter</RepositoryUrl>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
@@ -51,6 +51,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="items.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

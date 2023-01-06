@@ -83,11 +83,6 @@ namespace PSO2GatheringCounter
         /// </summary>
         private void SetGrid()
         {
-            // 固定のアイテム
-            _items.Add(new GridModel("アルファリアクター", 14, true));
-            _items.Add(new GridModel("ステラーシード", 10, true));
-            _items.Add(new GridModel("フォトンスケイル", 5, true));
-
             // ユーザ定義のアイテムを取得して追加
             var userItems = Util.GetUserItems();
             if (userItems.Count > 0)

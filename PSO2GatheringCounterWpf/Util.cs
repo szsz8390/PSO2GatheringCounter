@@ -88,7 +88,7 @@ namespace PSO2GatheringCounter
                 {
                     // CSV行[アイテム名,ノルマ数]
                     var userItemColumns = userItem.Split(",");
-                    if (userItemColumns.Length != 2) continue;
+                    if (userItemColumns.Length < 2) continue;
                     var itemName = userItemColumns[0];
                     int normaCount;
                     if (!string.IsNullOrWhiteSpace(itemName) && int.TryParse(userItemColumns[1], out normaCount))
