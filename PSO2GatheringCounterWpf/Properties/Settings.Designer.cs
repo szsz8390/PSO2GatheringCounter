@@ -82,5 +82,53 @@ namespace PSO2GatheringCounter.Properties {
                 this["AlwaysOnTop"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double ItemNameWidth {
+            get {
+                return ((double)(this["ItemNameWidth"]));
+            }
+            set {
+                this["ItemNameWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double GetCountWidth {
+            get {
+                return ((double)(this["GetCountWidth"]));
+            }
+            set {
+                this["GetCountWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double NormaCountWidth {
+            get {
+                return ((double)(this["NormaCountWidth"]));
+            }
+            set {
+                this["NormaCountWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double CompletedWidth {
+            get {
+                return ((double)(this["CompletedWidth"]));
+            }
+            set {
+                this["CompletedWidth"] = value;
+            }
+        }
     }
 }

@@ -83,6 +83,8 @@ namespace PSO2GatheringCounter
         /// </summary>
         private void SetGrid()
         {
+            // カラム設定
+            LoadGridColumnsSetting();
             // ユーザ定義のアイテムを取得して追加
             var userItems = Util.GetUserItems();
             if (userItems.Count > 0)
@@ -97,6 +99,30 @@ namespace PSO2GatheringCounter
             _items.Add(new GridModel("", 0));
 
             dataGrid.ItemsSource = _items;
+        }
+
+        /// <summary>
+        /// アプリケーション設定から各カラムの幅を取得して反映させる。
+        /// </summary>
+        private void LoadGridColumnsSetting()
+        {
+            var settings = Properties.Settings.Default;
+            if (settings.ItemNameWidth >= 0)
+            {
+                dataGrid.Columns[0].Width = settings.ItemNameWidth;
+            }
+            if (settings.GetCountWidth >= 0)
+            {
+                dataGrid.Columns[1].Width = settings.GetCountWidth;
+            }
+            if (settings.NormaCountWidth > 0)
+            {
+                dataGrid.Columns[2].Width = settings.NormaCountWidth;
+            }
+            if (settings.CompletedWidth > 0)
+            {
+                dataGrid.Columns[3].Width = settings.CompletedWidth;
+            }
         }
 
         /// <summary>
@@ -251,6 +277,19 @@ namespace PSO2GatheringCounter
         }
 
         /// <summary>
+        /// グリッドのカラム幅をアプリケーション設定に保存する。
+        /// </summary>
+        private void SaveGridColumnsSetting()
+        {
+            var settings = Properties.Settings.Default;
+            settings.ItemNameWidth = dataGrid.Columns[0].Width.Value;
+            settings.GetCountWidth = dataGrid.Columns[1].Width.Value;
+            settings.NormaCountWidth = dataGrid.Columns[2].Width.Value;
+            settings.CompletedWidth = dataGrid.Columns[3].Width.Value;
+            settings.Save();
+        }
+
+        /// <summary>
         /// メイン画面終了時、設定を保存する。
         /// </summary>
         /// <param name="sender"></param>
@@ -259,6 +298,8 @@ namespace PSO2GatheringCounter
         {
             // ウィンドウ
             SaveWindowBounds();
+            // グリッド
+            SaveGridColumnsSetting();
             // ユーザー定義のアイテム
             Util.WriteUserItems(_items);
         }
