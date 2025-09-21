@@ -1,6 +1,8 @@
-﻿using System;
+﻿using PSO2GatheringCounter;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 
 namespace PSO2GatheringCounterWpf
@@ -20,7 +22,8 @@ namespace PSO2GatheringCounterWpf
         private const string MutexName = "PSO2GatheringCounter";
 
         /// <summary>二重起動防止用Mutex</summary>
-        private static System.Threading.Mutex? _mutex;
+        private Mutex? _mutex;
+        private bool _ownerShip = false;
 
         /// <summary>
         /// 開始時処理
@@ -29,10 +32,22 @@ namespace PSO2GatheringCounterWpf
         /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
-            bool createdNew;
-            _mutex = new System.Threading.Mutex(true, MutexName, out createdNew);
-            // 新規作成なら通常起動、既にMutexが作成されていた場合は二重起動なので終了させる
-            if (createdNew)
+            _mutex = new Mutex(_ownerShip, MutexName);
+            try
+            {
+                _ownerShip = _mutex.WaitOne(0);
+            }
+            catch (AbandonedMutexException)
+            {
+                // 正しく開放されずに破棄されていたという通知なので無視
+                _ownerShip = true;
+            }
+            catch
+            {
+                // NOP
+            }
+            // 多重起動抑止判定
+            if (_ownerShip)
             {
                 base.OnStartup(e);
             }
@@ -114,7 +129,11 @@ namespace PSO2GatheringCounterWpf
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
-            _mutex?.ReleaseMutex();
+            if (_ownerShip)
+            {
+                _mutex?.ReleaseMutex();
+            }
+            _mutex?.Close();
         }
     }
 }
