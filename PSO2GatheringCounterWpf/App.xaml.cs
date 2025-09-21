@@ -16,22 +16,22 @@ namespace PSO2GatheringCounterWpf
         /// </summary>
         private const int SW_RESTORE = 9;
 
-        /// <summary>二重起動防止用セマフォの名前</summary>
-        private const string SemaphoreName = "PSO2GatheringCounter";
+        /// <summary>二重起動防止用Mutexの名前</summary>
+        private const string MutexName = "PSO2GatheringCounter";
 
-        /// <summary>二重起動防止用セマフォ</summary>
-        private System.Threading.Semaphore? _semaphore;
+        /// <summary>二重起動防止用Mutex</summary>
+        private static System.Threading.Mutex? _mutex;
 
         /// <summary>
         /// 開始時処理
-        /// セマフォを作成し、新規作成の場合のみ起動処理を行う。
+        /// Mutexを作成し、新規作成の場合のみ起動処理を行う。
         /// </summary>
         /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
             bool createdNew;
-            _semaphore = new System.Threading.Semaphore(1, 1, SemaphoreName, out createdNew);
-            // 新規作成なら通常起動、既にセマフォが作成されていた場合は二重起動なので終了させる
+            _mutex = new System.Threading.Mutex(true, MutexName, out createdNew);
+            // 新規作成なら通常起動、既にMutexが作成されていた場合は二重起動なので終了させる
             if (createdNew)
             {
                 base.OnStartup(e);
@@ -108,24 +108,13 @@ namespace PSO2GatheringCounterWpf
 
         /// <summary>
         /// 終了時処理
-        /// セマフォを解放する。
+        /// Mutexを解放する。
         /// </summary>
         /// <param name="e"></param>
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
-#if DEBUG
-            try
-            {
-                _semaphore?.Release();
-            }
-            catch (Exception ex) when (ex is System.Threading.SemaphoreFullException)
-            {
-                //
-            }
-#else
-            _semaphore?.Release();
-#endif
+            _mutex?.ReleaseMutex();
         }
     }
 }

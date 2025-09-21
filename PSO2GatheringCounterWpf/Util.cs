@@ -173,17 +173,20 @@ namespace PSO2GatheringCounter
                 return count;
             }
             // アイテム名が合っていて、取得ログの場合のみ加算
-            if (columns[2] == "[Pickup]" && columns[5] == itemName)
+            if (columns[2] == "[Pickup]" || columns[2].StartsWith("[Pickup-ToWarehouse"))
             {
-                if (itemName == "アルファリアクター")
+                if (columns[5] == itemName)
                 {
-                    System.Diagnostics.Debug.WriteLine("logDate: " + logDt + ", today: " + today);
+                    if (itemName == "アルファリアクター")
+                    {
+                        System.Diagnostics.Debug.WriteLine("logDate: " + logDt + ", today: " + today);
+                    }
+                    // 獲得数 Num\([0-9]+\)
+                    var num = columns[6];
+                    var match = _numberRegex.Match(num);
+                    // 数値の正規表現にマッチした部分なので直Parseで大丈夫
+                    count = int.Parse(match?.Value ?? "0");
                 }
-                // 獲得数 Num\([0-9]+\)
-                var num = columns[6];
-                var match = _numberRegex.Match(num);
-                // 数値の正規表現にマッチした部分なので直Parseで大丈夫
-                count = int.Parse(match?.Value ?? "0");
             }
             return count;
         }

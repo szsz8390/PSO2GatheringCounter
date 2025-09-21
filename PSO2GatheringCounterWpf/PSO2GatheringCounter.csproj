@@ -7,10 +7,10 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>PSO2GatheringCounter.ico</ApplicationIcon>
     <DebugType>none</DebugType>
-    <AssemblyVersion>1.4.0.0</AssemblyVersion>
-    <FileVersion>1.４.0.0</FileVersion>
+    <AssemblyVersion>1.5.0.0</AssemblyVersion>
+    <FileVersion>1.5.0.0</FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.3.1</Version>
+    <Version>1.5.0</Version>
     <PackageProjectUrl>https://github.com/szsz8390/PSO2GatheringCounter</PackageProjectUrl>
     <RepositoryUrl>https://github.com/szsz8390/PSO2GatheringCounter</RepositoryUrl>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
